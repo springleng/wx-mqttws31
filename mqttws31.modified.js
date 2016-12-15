@@ -973,11 +973,11 @@ Paho.MQTT = (function(wx) {
         this._notify_msg_sent = {};
         // The following part to be modified. At present time cannot receive this.socket object.
         if (this.socket) {
-            this.socket.onopen = null;
-            this.socket.onmessage = null;
-            this.socket.onerror = null;
-            this.socket.onclose = null;
-            if (this.socket.readyState === 1) this.socket.close();
+            wx.onSocketOpen(scope(function() {}, this));
+            wx.onSocketMessage(scope(function(event) {}, this));
+            wx.onSocketError(scope(function(error) {}, this));
+            wx.onSocketClose(scope(function() {}, this));
+            if (this.socket.readyState === 1) wx.closeSocket();
             delete this.socket
         }
         if (this.connectOptions.uris && this.hostIndex < this.connectOptions.uris.length - 1) {
