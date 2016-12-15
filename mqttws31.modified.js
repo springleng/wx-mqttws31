@@ -625,13 +625,17 @@ Paho.MQTT = (function(wx) {
             wsurl = uriParts.join(":")
         }
         this.connected = false;
-        if (this.connectOptions.mqttVersion < 4) {
-            // this.socket = new WebSocket(wsurl, ["mqttv3.1"])
-        } else {
-            // this.socket = new WebSocket(wsurl, ["mqtt"])
-        }
+        // if (this.connectOptions.mqttVersion < 4) {
+        //     this.socket = new WebSocket(wsurl, ["mqttv3.1"])
+        // } else {
+        //     this.socket = new WebSocket(wsurl, ["mqtt"])
+        // }
+        // Temp solution way.
         wx.connectSocket({
-            url: wsurl
+            url: wsurl,
+            header: {
+                "Sec-WebSocket-Protocol": ((this.connectOptions.mqttVersion < 4) ? "mqttv3.1" : "mqtt")
+            }
         });
         // this.socket.binaryType = 'arraybuffer';
         wx.onSocketOpen(scope(this._on_socket_open, this));
@@ -967,6 +971,7 @@ Paho.MQTT = (function(wx) {
         if (this._connectTimeout) this._connectTimeout.cancel();
         this._msg_queue = [];
         this._notify_msg_sent = {};
+        // The following part to be modified. At present time cannot receive this.socket object.
         if (this.socket) {
             this.socket.onopen = null;
             this.socket.onmessage = null;
